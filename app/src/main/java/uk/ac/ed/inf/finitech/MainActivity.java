@@ -1,6 +1,7 @@
 package uk.ac.ed.inf.finitech;
 
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -9,8 +10,10 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +41,20 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivity(myIntent);
             }
         });
+
+        TextView ipAddress_tv = findViewById(R.id.ipAddress_tv);
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        if (wm != null) {
+            int ip = wm.getConnectionInfo().getIpAddress();
+            if (ip != 0) {
+                // TODO: deprecated API
+                ipAddress_tv.setText(Formatter.formatIpAddress(ip));
+            } else {
+                ipAddress_tv.setText("Unknown (Is the device connected to Wi-Fi?)");
+            }
+        } else {
+            ipAddress_tv.setText("N/A (Does the device have Wi-Fi support?)");
+        }
     }
 
 }
