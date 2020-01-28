@@ -2,21 +2,23 @@ package uk.ac.ed.inf.finitech;
 
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 
+public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,20 +26,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        Button manualOverride = findViewById(R.id.manualButton);
-        manualOverride.setOnClickListener(new View.OnClickListener() {
+        Button connectButton = findViewById(R.id.connectButton);
+        connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String server_ip = ((EditText) findViewById(R.id.serverIpEt)).getText().toString();
+                int server_port = Integer.parseInt(((EditText) findViewById(R.id.serverPortEt)).getText().toString());
+
                 Intent myIntent = new Intent(MainActivity.this, ManualControlActivity.class);
+                myIntent.putExtra("serverIp", server_ip);
+                myIntent.putExtra("serverPort", server_port);
                 MainActivity.this.startActivity(myIntent);
             }
         });
@@ -56,5 +54,4 @@ public class MainActivity extends AppCompatActivity {
             ipAddress_tv.setText("N/A (Does the device have Wi-Fi support?)");
         }
     }
-
 }

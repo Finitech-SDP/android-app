@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Finitech</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_manual_control">ManualControlActivity</string>
+    <string name="title_activity_main">Finitech</string>
+    <string name="title_activity_manual_control">Manual Control</string>
 </resources>
