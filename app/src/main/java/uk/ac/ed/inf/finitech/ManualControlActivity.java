@@ -3,20 +3,18 @@ package uk.ac.ed.inf.finitech;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
-import android.widget.Button;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ManualControlActivity extends AppCompatActivity {
-    private ConnectionTask connectionTask;
+    private TcpClient tcpClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +27,20 @@ public class ManualControlActivity extends AppCompatActivity {
         String serverIp = intent.getStringExtra("serverIp");
         int serverPort = intent.getIntExtra("serverPort", 0);
 
-        connectionTask = new ConnectionTask(serverIp, serverPort);
-        connectionTask.execute();
+        tcpClient = new TcpClient(serverIp, serverPort, new TcpClient.EventHandler() {
+            @Override
+            public void onMessage(byte[] message) {
+                ManualControlActivity.this.onTcpMessage(message);
+            }
+
+            @Override
+            public void onError(Throwable tr) {
+                ManualControlActivity.this.onTcpError(tr);
+            }
+        });
+
+        Thread tcpClientThread = new Thread(tcpClient);
+        tcpClientThread.start();
 
         // maps from button ids to commands
         final Map<Integer, String> buttonCommands = new HashMap<>();
@@ -49,10 +59,24 @@ public class ManualControlActivity extends AppCompatActivity {
             findViewById(id).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    connectionTask.sendMessage(buttonCommands.get(id).getBytes());
+                    tcpClient.sendMessage(buttonCommands.get(id).getBytes());
                 }
             });
         }
     }
 
+    private void onTcpMessage(byte[] message) {
+        Snackbar.make(findViewById(android.R.id.content), new String(message), Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onTcpError(Throwable tr) {
+        Snackbar.make(findViewById(android.R.id.content), tr.toString(), Snackbar.LENGTH_INDEFINITE).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        tcpClient.close();
+    }
 }

@@ -11,17 +11,19 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-public class TcpClient {
+public class TcpClient implements Runnable {
     private static final String TAG = TcpClient.class.getSimpleName();
     private final String serverIp;
     private final int serverPort;
-    private OnMessageReceived mMessageListener;
+    private EventHandler eventHandler;
     private DataOutputStream outputStream;
+    private DataInputStream inputStream;
+    private Socket socket;
 
-    TcpClient(String ip, int port, OnMessageReceived listener) {
+    TcpClient(String ip, int port, EventHandler listener) {
         serverIp = ip;
         serverPort = port;
-        mMessageListener = listener;
+        eventHandler = listener;
     }
 
     // SYNCHRONOUS
@@ -36,54 +38,64 @@ public class TcpClient {
         }
 
         try {
-            byte[] typeHeader = new byte[1];
-            typeHeader[0] = 0x01;
-            outputStream.write(typeHeader);
+            outputStream.writeByte((byte) 0x01b);
             outputStream.writeInt(message.length);  // is big-endian
             outputStream.write(message);
             outputStream.flush();
         } catch (IOException exc) {
             Log.e(TAG, "sendMessage exception", exc);
+            eventHandler.onError(exc);
         }
     }
 
-    void run() {
+    public void run() {
         try {
-            Socket socket = new Socket(InetAddress.getByName(serverIp), serverPort);
+            socket = new Socket(InetAddress.getByName(serverIp), serverPort);
             socket.setTcpNoDelay(true);
 
             outputStream = new DataOutputStream(socket.getOutputStream());
-            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-
-            try {
-                //in this while the client listens for the messages sent by the server
-                for(;;) {
-                    byte[] typeField = new byte[1];
-                    byte[] lengthField = new byte[4];
-                    byte[] message;
-
-                    inputStream.readFully(typeField);
-                    inputStream.readFully(lengthField);
-
-                    int length = ByteBuffer.wrap(lengthField).getInt();  // big-endian by default
-                    message = new byte[length];
-                    inputStream.readFully(message);
-
-                    mMessageListener.messageReceived(message);
-                }
-            } catch (Exception e) {
-                Log.e("TCP", "S: Error", e);
-            } finally {
-                socket.close();
-            }
-
-        } catch (Exception e) {
-            Log.e("TCP", "C: Error", e);
+            inputStream = new DataInputStream(socket.getInputStream());
+        } catch (Throwable tr) {
+            Log.e(TAG, "connect()", tr);
+            eventHandler.onError(tr);
         }
 
+        try {
+            for (;;) {
+                byte[] typeField = new byte[1];
+                byte[] lengthField = new byte[4];
+                byte[] message;
+
+                inputStream.readFully(typeField);
+                inputStream.readFully(lengthField);
+
+                int length = ByteBuffer.wrap(lengthField).getInt();  // big-endian by default
+                message = new byte[length];
+                inputStream.readFully(message);
+
+                eventHandler.onMessage(message);
+            }
+        } catch (Throwable tr) {
+            Log.e(TAG, "run()", tr);
+            eventHandler.onError(tr);
+        }
     }
 
-    public interface OnMessageReceived {
-        void messageReceived(byte[] message);
+    void close() {
+        try {
+            socket.close();
+        } catch (Throwable tr) {
+            Log.e(TAG, "close()", tr);
+            eventHandler.onError(tr);
+        }
+
+        socket = null;
+        outputStream = null;
+        inputStream = null;
+    }
+
+    public interface EventHandler {
+        void onMessage(byte[] message);
+        void onError(Throwable tr);
     }
 }
