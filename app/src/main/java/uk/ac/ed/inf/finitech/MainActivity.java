@@ -2,21 +2,16 @@ package uk.ac.ed.inf.finitech;
 
 import android.content.Intent;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.text.format.Formatter;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity {
     @Override

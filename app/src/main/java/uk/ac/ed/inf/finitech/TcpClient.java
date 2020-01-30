@@ -11,11 +11,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-public class TcpClient implements Runnable {
+class TcpClient implements Runnable {
     private static final String TAG = TcpClient.class.getSimpleName();
     private final String serverIp;
     private final int serverPort;
-    private EventHandler eventHandler;
+    private final EventHandler eventHandler;
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
     private Socket socket;
