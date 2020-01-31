@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    static public TcpClient tcpClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,12 +27,14 @@ public class MainActivity extends AppCompatActivity {
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String server_ip = ((EditText) findViewById(R.id.serverIpEt)).getText().toString();
-                int server_port = Integer.parseInt(((EditText) findViewById(R.id.serverPortEt)).getText().toString());
+                String serverIp = ((EditText) findViewById(R.id.serverIpEt)).getText().toString();
+                int serverPort = Integer.parseInt(((EditText) findViewById(R.id.serverPortEt)).getText().toString());
 
-                Intent myIntent = new Intent(MainActivity.this, ManualControlActivity.class);
-                myIntent.putExtra("serverIp", server_ip);
-                myIntent.putExtra("serverPort", server_port);
+                tcpClient = new TcpClient(serverIp, serverPort);
+                Thread tcpClientThread = new Thread(tcpClient);
+                tcpClientThread.start();
+
+                Intent myIntent = new Intent(MainActivity.this, ConnectRobotActivity.class);
                 MainActivity.this.startActivity(myIntent);
             }
         });

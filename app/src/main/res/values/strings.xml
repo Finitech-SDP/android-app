@@ -2,4 +2,5 @@
     <string name="app_name">Finitech</string>
     <string name="title_activity_main">Finitech</string>
     <string name="title_activity_manual_control">Manual Control</string>
+    <string name="title_activity_connect_robot">Connect to the Robot</string>
 </resources>

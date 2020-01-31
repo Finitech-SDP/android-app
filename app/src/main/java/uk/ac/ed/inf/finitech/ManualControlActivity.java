@@ -23,11 +23,8 @@ public class ManualControlActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Intent intent = getIntent();
-        String serverIp = intent.getStringExtra("serverIp");
-        int serverPort = intent.getIntExtra("serverPort", 0);
-
-        tcpClient = new TcpClient(serverIp, serverPort, new TcpClient.EventHandler() {
+        tcpClient = MainActivity.tcpClient;
+        tcpClient.setEventHandler(new TcpClient.EventHandler() {
             @Override
             public void onMessage(byte[] message) {
                 ManualControlActivity.this.onTcpMessage(message);
@@ -38,9 +35,6 @@ public class ManualControlActivity extends AppCompatActivity {
                 ManualControlActivity.this.onTcpError(tr);
             }
         });
-
-        Thread tcpClientThread = new Thread(tcpClient);
-        tcpClientThread.start();
 
         // maps from button ids to commands
         final Map<Integer, String> buttonCommands = new HashMap<>();

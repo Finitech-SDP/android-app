@@ -15,15 +15,18 @@ class TcpClient implements Runnable {
     private static final String TAG = TcpClient.class.getSimpleName();
     private final String serverIp;
     private final int serverPort;
-    private final EventHandler eventHandler;
+    private EventHandler eventHandler;
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
     private Socket socket;
 
-    TcpClient(String ip, int port, EventHandler listener) {
+    TcpClient(String ip, int port) {
         serverIp = ip;
         serverPort = port;
-        eventHandler = listener;
+    }
+
+    void setEventHandler(EventHandler eventHandler) {
+        this.eventHandler = eventHandler;
     }
 
     // SYNCHRONOUS
