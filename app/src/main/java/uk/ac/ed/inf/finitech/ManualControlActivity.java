@@ -9,12 +9,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ManualControlActivity extends AppCompatActivity {
     private TcpClient tcpClient;
+    private int power = 50;
+    private int degrees = 90;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +27,63 @@ public class ManualControlActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manual_control);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // maps from button ids to commands
+        final Map<Integer, String> buttonCommands = new HashMap<>();
+        buttonCommands.put(R.id.nBtn, "N");
+        buttonCommands.put(R.id.nwBtn, "NW");
+        buttonCommands.put(R.id.swBtn, "SW");
+        buttonCommands.put(R.id.sBtn, "S");
+        buttonCommands.put(R.id.seBtn, "SE");
+        buttonCommands.put(R.id.neBtn, "NE");
+        buttonCommands.put(R.id.acwBtn, "AR");
+        buttonCommands.put(R.id.cwBtn, "CR");
+        buttonCommands.put(R.id.stopBtn, "STOP");
+
+        for (final Integer id : buttonCommands.keySet()) {
+            findViewById(id).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String message = MessageFormat.format(
+                            "{0} {1} {2}",
+                            buttonCommands.get(id),
+                            ManualControlActivity.this.power,
+                            ManualControlActivity.this.degrees
+                    );
+                    tcpClient.sendMessage(message.getBytes());
+                }
+            });
+        }
+
+        ((SeekBar) findViewById(R.id.powerSB)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ((TextView) findViewById(R.id.powerValTV)).setText(progress + "%");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                ManualControlActivity.this.power = seekBar.getProgress();
+            }
+        });
+
+        ((SeekBar) findViewById(R.id.degreesSB)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ((TextView) findViewById(R.id.degreesValTV)).setText("" + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                ManualControlActivity.this.degrees = seekBar.getProgress();
+            }
+        });
 
         tcpClient = MainActivity.tcpClient;
         tcpClient.setEventHandler(new TcpClient.EventHandler() {
@@ -35,28 +97,6 @@ public class ManualControlActivity extends AppCompatActivity {
                 ManualControlActivity.this.onTcpError(tr);
             }
         });
-
-        // maps from button ids to commands
-        final Map<Integer, String> buttonCommands = new HashMap<>();
-        buttonCommands.put(R.id.nBtn, "NORTH");
-        buttonCommands.put(R.id.nwBtn, "NORTH WEST");
-        buttonCommands.put(R.id.wBtn, "WEST");
-        buttonCommands.put(R.id.swBtn, "SOUTH WEST");
-        buttonCommands.put(R.id.sBtn, "SOUTH");
-        buttonCommands.put(R.id.seBtn, "SOUTH EAST");
-        buttonCommands.put(R.id.eBtn, "EAST");
-        buttonCommands.put(R.id.neBtn, "NORTH EAST");
-        buttonCommands.put(R.id.acwBtn, "ANTI CLOCKWISE");
-        buttonCommands.put(R.id.cwBtn, "CLOCKWISE");
-
-        for (final Integer id : buttonCommands.keySet()) {
-            findViewById(id).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    tcpClient.sendMessage(buttonCommands.get(id).getBytes());
-                }
-            });
-        }
     }
 
     private void onTcpMessage(byte[] message) {
