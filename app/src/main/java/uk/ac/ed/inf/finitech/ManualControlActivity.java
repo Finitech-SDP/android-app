@@ -1,6 +1,5 @@
 package uk.ac.ed.inf.finitech;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -9,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -21,6 +21,111 @@ public class ManualControlActivity extends AppCompatActivity {
     private int power = 50;
     private int degrees = 90;
 
+    private Button fwdBtn, fwdrBtn, fwdlBtn, bwdBtn, bwdrBtn, bwdlBtn, cwrBtn, acwrBtn, stopBtn;
+
+    private void findButtons() {
+        fwdBtn = findViewById(R.id.fwdBtn);
+        fwdrBtn = findViewById(R.id.fwdrBtn);
+        fwdlBtn = findViewById(R.id.fwdlBtn);
+        bwdBtn = findViewById(R.id.bwdBtn);
+        bwdrBtn = findViewById(R.id.bwdrBtn);
+        bwdlBtn = findViewById(R.id.bwdlBtn);
+        cwrBtn = findViewById(R.id.cwrBtn);
+        acwrBtn = findViewById(R.id.acwrBtn);
+        stopBtn = findViewById(R.id.stopBtn);
+    }
+
+    private void setButtonActions() {
+        final int defaultTime = 1000;  // msec
+
+        fwdBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = String.format(
+                        "F %d %d",
+                        ManualControlActivity.this.power,
+                        defaultTime);
+                tcpClient.sendMessage(message.getBytes());
+            }
+        });
+        bwdBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = String.format(
+                        "B %d %d",
+                        ManualControlActivity.this.power,
+                        defaultTime);
+                tcpClient.sendMessage(message.getBytes());
+            }
+        });
+        fwdrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = String.format(
+                        "FR %d %d",
+                        ManualControlActivity.this.power,
+                        ManualControlActivity.this.degrees);
+                tcpClient.sendMessage(message.getBytes());
+            }
+        });
+        fwdlBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = String.format(
+                        "FL %d %d",
+                        ManualControlActivity.this.power,
+                        ManualControlActivity.this.degrees);
+                tcpClient.sendMessage(message.getBytes());
+            }
+        });
+        bwdrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = String.format(
+                        "BR %d %d",
+                        ManualControlActivity.this.power,
+                        ManualControlActivity.this.degrees);
+                tcpClient.sendMessage(message.getBytes());
+            }
+        });
+        bwdlBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = String.format(
+                        "BL %d %d",
+                        ManualControlActivity.this.power,
+                        ManualControlActivity.this.degrees);
+                tcpClient.sendMessage(message.getBytes());
+            }
+        });
+        cwrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = String.format(
+                        "RC %d %d",
+                        ManualControlActivity.this.power,
+                        ManualControlActivity.this.degrees);
+                tcpClient.sendMessage(message.getBytes());
+            }
+        });
+        acwrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = String.format(
+                        "RA %d %d",
+                        ManualControlActivity.this.power,
+                        ManualControlActivity.this.degrees);
+                tcpClient.sendMessage(message.getBytes());
+            }
+        });
+        stopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tcpClient.sendMessage("STOP".getBytes());
+            }
+        });
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,32 +133,9 @@ public class ManualControlActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // maps from button ids to commands
-        final Map<Integer, String> buttonCommands = new HashMap<>();
-        buttonCommands.put(R.id.nBtn, "N");
-        buttonCommands.put(R.id.nwBtn, "NW");
-        buttonCommands.put(R.id.swBtn, "SW");
-        buttonCommands.put(R.id.sBtn, "S");
-        buttonCommands.put(R.id.seBtn, "SE");
-        buttonCommands.put(R.id.neBtn, "NE");
-        buttonCommands.put(R.id.acwBtn, "AR");
-        buttonCommands.put(R.id.cwBtn, "CR");
-        buttonCommands.put(R.id.stopBtn, "STOP");
+        findButtons();
+        setButtonActions();
 
-        for (final Integer id : buttonCommands.keySet()) {
-            findViewById(id).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String message = MessageFormat.format(
-                            "{0} {1} {2}",
-                            buttonCommands.get(id),
-                            ManualControlActivity.this.power,
-                            ManualControlActivity.this.degrees
-                    );
-                    tcpClient.sendMessage(message.getBytes());
-                }
-            });
-        }
 
         ((SeekBar) findViewById(R.id.powerSB)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

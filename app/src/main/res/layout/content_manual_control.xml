@@ -26,22 +26,22 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/nwBtn"
+                android:id="@+id/fwdlBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NW" />
+                android:text="FWD.L" />
 
             <Button
-                android:id="@+id/nBtn"
+                android:id="@+id/fwdBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NORTH" />
+                android:text="FWD" />
 
             <Button
-                android:id="@+id/neBtn"
+                android:id="@+id/fwdrBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NE" />
+                android:text="FWD.R" />
         </TableRow>
 
         <TableRow
@@ -67,22 +67,22 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/swBtn"
+                android:id="@+id/bwdlBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SW" />
+                android:text="BWD.L" />
 
             <Button
-                android:id="@+id/sBtn"
+                android:id="@+id/bwdBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SOUTH" />
+                android:text="BWD" />
 
             <Button
-                android:id="@+id/seBtn"
+                android:id="@+id/bwdrBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SE" />
+                android:text="BWD.R" />
 
         </TableRow>
 
@@ -91,20 +91,20 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/acwBtn"
+                android:id="@+id/acwrBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ANTI CW" />
+                android:text="ACWR" />
 
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <Button
-                android:id="@+id/cwBtn"
+                android:id="@+id/cwrBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CW" />
+                android:text="CWR" />
         </TableRow>
 
     </TableLayout>
