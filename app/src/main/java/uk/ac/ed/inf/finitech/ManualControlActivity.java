@@ -88,12 +88,18 @@ public class ManualControlActivity extends AppCompatActivity {
         tcpClient = MainActivity.tcpClient;
         tcpClient.setEventHandler(new TcpClient.EventHandler() {
             @Override
+            public void onConnect() { }
+
+            @Override
+            public void onConnectError(Throwable tr) { }
+
+            @Override
             public void onMessage(byte[] message) {
                 ManualControlActivity.this.onTcpMessage(message);
             }
 
             @Override
-            public void onError(Throwable tr) {
+            public void onOperationalError(Throwable tr) {
                 ManualControlActivity.this.onTcpError(tr);
             }
         });
@@ -104,13 +110,12 @@ public class ManualControlActivity extends AppCompatActivity {
     }
 
     private void onTcpError(Throwable tr) {
-        Snackbar.make(findViewById(android.R.id.content), tr.toString(), Snackbar.LENGTH_INDEFINITE).show();
+        Snackbar.make(findViewById(android.R.id.content), "Operational Error", Snackbar.LENGTH_INDEFINITE).show();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         tcpClient.close();
     }
 }

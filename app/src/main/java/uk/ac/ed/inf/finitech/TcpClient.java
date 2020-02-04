@@ -7,12 +7,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 class TcpClient implements Runnable {
     private static final String TAG = TcpClient.class.getSimpleName();
+    private TcpClientState state;
     private final String serverIp;
     private final int serverPort;
     private EventHandler eventHandler;
@@ -20,7 +23,11 @@ class TcpClient implements Runnable {
     private DataInputStream inputStream;
     private Socket socket;
 
+    private final ReentrantLock reentrantLock = new ReentrantLock();
+    private final Condition condition = reentrantLock.newCondition();
+
     TcpClient(String ip, int port) {
+        state = TcpClientState.START;
         serverIp = ip;
         serverPort = port;
     }
@@ -31,8 +38,10 @@ class TcpClient implements Runnable {
 
     // SYNCHRONOUS
     void sendMessage(final byte[] message) {
-        if (outputStream == null)
+        if (state != TcpClientState.OPERATING) {
+            Log.e(TAG, String.format("sendMessage() is called but state is not OPERATING (is %s)", state));
             return;
+        }
 
         try {
             Log.d(TAG, "Sending: " + new String(message, "ascii"));
@@ -46,23 +55,49 @@ class TcpClient implements Runnable {
             outputStream.write(message);
             outputStream.flush();
         } catch (IOException exc) {
+            state = TcpClientState.OPERATIONAL_ERROR;
             Log.e(TAG, "sendMessage exception", exc);
-            eventHandler.onError(exc);
+            eventHandler.onOperationalError(exc);
         }
     }
 
     public void run() {
+        if (state != TcpClientState.START) {
+            Log.e(TAG, String.format("run() is called but state is not START (is %s)", state));
+            return;
+        }
+
+        state = TcpClientState.CONNECTING;
         try {
-            socket = new Socket(InetAddress.getByName(serverIp), serverPort);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(serverIp, serverPort), 1000);
             socket.setTcpNoDelay(true);
 
             outputStream = new DataOutputStream(socket.getOutputStream());
             inputStream = new DataInputStream(socket.getInputStream());
         } catch (Throwable tr) {
+            state = TcpClientState.CONNECT_ERROR;
             Log.e(TAG, "connect()", tr);
-            eventHandler.onError(tr);
+            eventHandler.onConnectError(tr);
+            return;
         }
 
+        state = TcpClientState.CONNECTED;
+        eventHandler.onConnect();
+
+        try {
+            reentrantLock.lock();
+            condition.await();
+        } catch (InterruptedException e) {
+            Log.e(TAG, "thread interrupted", e);
+            close();
+            state = TcpClientState.CLOSED;
+            return;
+        } finally {
+            reentrantLock.unlock();
+        }
+
+        state = TcpClientState.OPERATING;
         try {
             for (;;) {
                 byte[] typeField = new byte[1];
@@ -79,8 +114,18 @@ class TcpClient implements Runnable {
                 eventHandler.onMessage(message);
             }
         } catch (Throwable tr) {
+            state = TcpClientState.OPERATIONAL_ERROR;
             Log.e(TAG, "run()", tr);
-            eventHandler.onError(tr);
+            eventHandler.onOperationalError(tr);
+        }
+    }
+
+    void startOperating() {
+        try {
+            reentrantLock.lock();
+            condition.signal();
+        } finally {
+            reentrantLock.unlock();
         }
     }
 
@@ -89,7 +134,7 @@ class TcpClient implements Runnable {
             socket.close();
         } catch (Throwable tr) {
             Log.e(TAG, "close()", tr);
-            eventHandler.onError(tr);
+            // Ignore close() errors
         }
 
         socket = null;
@@ -97,8 +142,24 @@ class TcpClient implements Runnable {
         inputStream = null;
     }
 
+    TcpClientState getState() {
+        return state;
+    }
+
     public interface EventHandler {
+        void onConnect();
+        void onConnectError(Throwable tr);
         void onMessage(byte[] message);
-        void onError(Throwable tr);
+        void onOperationalError(Throwable tr);
+    }
+
+    public enum TcpClientState {
+        START,
+        CONNECTING,
+        CONNECTED,
+        OPERATING,
+        CLOSED,
+        CONNECT_ERROR,
+        OPERATIONAL_ERROR
     }
 }

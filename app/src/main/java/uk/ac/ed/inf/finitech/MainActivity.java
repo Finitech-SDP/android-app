@@ -8,10 +8,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
     static public TcpClient tcpClient;
@@ -32,10 +35,25 @@ public class MainActivity extends AppCompatActivity {
 
                 tcpClient = new TcpClient(serverIp, serverPort);
                 Thread tcpClientThread = new Thread(tcpClient);
-                tcpClientThread.start();
+                tcpClient.setEventHandler(new TcpClient.EventHandler() {
+                    @Override
+                    public void onConnect() {
+                        Intent myIntent = new Intent(MainActivity.this, ConnectRobotActivity.class);
+                        MainActivity.this.startActivity(myIntent);
+                    }
 
-                Intent myIntent = new Intent(MainActivity.this, ConnectRobotActivity.class);
-                MainActivity.this.startActivity(myIntent);
+                    @Override
+                    public void onConnectError(Throwable tr) {
+                        Snackbar.make(findViewById(android.R.id.content), "Connection Error", Snackbar.LENGTH_INDEFINITE).show();
+                    }
+
+                    @Override
+                    public void onMessage(byte[] message) { }
+
+                    @Override
+                    public void onOperationalError(Throwable tr) {}
+                });
+                tcpClientThread.start();
             }
         });
 
