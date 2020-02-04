@@ -19,17 +19,20 @@
             android:name=".ConnectRobotActivity"
             android:label="@string/title_activity_connect_robot"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ManualControlActivity"
             android:label="@string/title_activity_manual_control"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
