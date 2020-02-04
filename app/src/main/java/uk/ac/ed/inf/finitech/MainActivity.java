@@ -1,6 +1,7 @@
 package uk.ac.ed.inf.finitech;
 
 import android.content.Intent;
+import android.net.InetAddresses;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
@@ -16,7 +17,11 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class MainActivity extends AppCompatActivity {
+    private Button connectButton;
     static public TcpClient tcpClient;
 
     @Override
@@ -26,10 +31,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button connectButton = findViewById(R.id.connectButton);
+        connectButton = findViewById(R.id.connectButton);
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                connectButton.setEnabled(false);
+
                 String serverIp = ((EditText) findViewById(R.id.serverIpEt)).getText().toString();
                 int serverPort = Integer.parseInt(((EditText) findViewById(R.id.serverPortEt)).getText().toString());
 
@@ -38,20 +45,33 @@ public class MainActivity extends AppCompatActivity {
                 tcpClient.setEventHandler(new TcpClient.EventHandler() {
                     @Override
                     public void onConnect() {
-                        Intent myIntent = new Intent(MainActivity.this, ConnectRobotActivity.class);
-                        MainActivity.this.startActivity(myIntent);
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent myIntent = new Intent(MainActivity.this, ConnectRobotActivity.class);
+                                MainActivity.this.startActivity(myIntent);
+                            }
+                        });
                     }
 
                     @Override
                     public void onConnectError(Throwable tr) {
-                        Snackbar.make(findViewById(android.R.id.content), "Connection Error", Snackbar.LENGTH_INDEFINITE).show();
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                connectButton.setEnabled(true);
+                                Snackbar.make(findViewById(android.R.id.content), "Connection Error", Snackbar.LENGTH_INDEFINITE).show();
+                            }
+                        });
                     }
 
                     @Override
-                    public void onMessage(byte[] message) { }
+                    public void onMessage(byte[] message) {
+                    }
 
                     @Override
-                    public void onOperationalError(Throwable tr) {}
+                    public void onOperationalError(Throwable tr) {
+                    }
                 });
                 tcpClientThread.start();
             }
@@ -62,8 +82,12 @@ public class MainActivity extends AppCompatActivity {
         if (wm != null) {
             int ip = wm.getConnectionInfo().getIpAddress();
             if (ip != 0) {
-                // TODO: deprecated API
-                ipAddress_tv.setText(Formatter.formatIpAddress(ip));
+                ipAddress_tv.setText(String.format(
+                        "%d.%d.%d.%d",
+                        (ip & 0xff),
+                        (ip >> 8 & 0xff),
+                        (ip >> 16 & 0xff),
+                        (ip >> 24 & 0xff)));
             } else {
                 ipAddress_tv.setText("Unknown (Is the device connected to Wi-Fi?)");
             }
