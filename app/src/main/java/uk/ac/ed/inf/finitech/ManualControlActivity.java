@@ -94,13 +94,23 @@ public class ManualControlActivity extends AppCompatActivity {
             public void onConnectError(Throwable tr) { }
 
             @Override
-            public void onMessage(byte[] message) {
-                ManualControlActivity.this.onTcpMessage(message);
+            public void onMessage(final byte[] message) {
+                ManualControlActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ManualControlActivity.this.onTcpMessage(message);
+                    }
+                });
             }
 
             @Override
-            public void onOperationalError(Throwable tr) {
-                ManualControlActivity.this.onTcpError(tr);
+            public void onOperationalError(final Throwable tr) {
+                ManualControlActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ManualControlActivity.this.onTcpError(tr);
+                    }
+                });
             }
         });
     }
