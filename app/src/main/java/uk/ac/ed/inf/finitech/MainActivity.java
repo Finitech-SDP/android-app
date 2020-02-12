@@ -1,15 +1,11 @@
 package uk.ac.ed.inf.finitech;
 
 import android.content.Intent;
-import android.net.InetAddresses;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import android.text.format.Formatter;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,12 +13,10 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity {
     private Button connectButton;
-    static public TcpClient tcpClient;
+    static public TcpClient tcpClient = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
                 String serverIp = ((EditText) findViewById(R.id.serverIpEt)).getText().toString();
                 int serverPort = Integer.parseInt(((EditText) findViewById(R.id.serverPortEt)).getText().toString());
+
+                if (serverIp.equals("0.0.0.0")) {
+                    tcpClient = null;
+                    Intent myIntent = new Intent(MainActivity.this, ConnectRobotActivity.class);
+                    MainActivity.this.startActivity(myIntent);
+                    return;
+                }
 
                 tcpClient = new TcpClient(serverIp, serverPort);
                 Thread tcpClientThread = new Thread(tcpClient);

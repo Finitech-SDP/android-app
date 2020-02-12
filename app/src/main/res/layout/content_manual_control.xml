@@ -8,181 +8,48 @@
     tools:context=".ManualControlActivity"
     tools:showIn="@layout/activity_manual_control">
 
-    <TableLayout
-        android:id="@+id/tableLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TableRow
+        <io.github.controlwear.virtual.joystick.android.JoystickView
+            android:id="@+id/joystick"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:JV_backgroundColor="#009688"
+            app:JV_borderColor="#00796B"
+            app:JV_borderWidth="4dp"
+            app:JV_buttonColor="#FF6E40"
+            app:JV_buttonSizeRatio="15%"
+            app:JV_fixedCenter="true" />
+
+        <io.github.controlwear.virtual.joystick.android.JoystickView
+            android:id="@+id/joystick2"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            app:JV_backgroundColor="#009688"
+            app:JV_borderColor="#00796B"
+            app:JV_borderWidth="4dp"
+            app:JV_buttonColor="#FF6E40"
+            app:JV_buttonDirection="horizontal"
+            app:JV_buttonSizeRatio="15%"
+            app:JV_fixedCenter="true" />
+
+        <Button
+            android:id="@+id/stopBtn"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:id="@+id/fwdlBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FWD.L" />
-
-            <Button
-                android:id="@+id/fwdBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FWD" />
-
-            <Button
-                android:id="@+id/fwdrBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FWD.R" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="50px" />
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:id="@+id/bwdlBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BWD.L" />
-
-            <Button
-                android:id="@+id/bwdBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BWD" />
-
-            <Button
-                android:id="@+id/bwdrBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BWD.R" />
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:id="@+id/acwrBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ACWR" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/cwrBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CWR" />
-        </TableRow>
-
-    </TableLayout>
-
-    <Button
-        android:id="@+id/stopBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="STOP"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Power: "
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stopBtn" />
-
-    <SeekBar
-        android:id="@+id/powerSB"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:indeterminate="false"
-        android:max="100"
-        android:progress="50"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <TextView
-        android:id="@+id/powerValTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="50%"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/textView" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="Degrees: "
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/powerSB" />
-
-    <SeekBar
-        android:id="@+id/degreesSB"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:indeterminate="false"
-        android:max="360"
-        android:progress="90"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
-
-    <TextView
-        android:id="@+id/degreesValTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="90"
-        app:layout_constraintStart_toEndOf="@+id/textView5"
-        app:layout_constraintTop_toTopOf="@+id/textView5" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="32dp"
+            android:text="STOP" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

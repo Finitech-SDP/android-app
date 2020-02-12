@@ -7,121 +7,30 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
+import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 public class ManualControlActivity extends AppCompatActivity {
+    private static String TAG = "ManualControlActivity";
     private TcpClient tcpClient;
-    private int power = 50;
-    private int degrees = 90;
 
-    private Button fwdBtn, fwdrBtn, fwdlBtn, bwdBtn, bwdrBtn, bwdlBtn, cwrBtn, acwrBtn, stopBtn;
+    private Button stopBtn;
 
     private void findButtons() {
-        fwdBtn = findViewById(R.id.fwdBtn);
-        fwdrBtn = findViewById(R.id.fwdrBtn);
-        fwdlBtn = findViewById(R.id.fwdlBtn);
-        bwdBtn = findViewById(R.id.bwdBtn);
-        bwdrBtn = findViewById(R.id.bwdrBtn);
-        bwdlBtn = findViewById(R.id.bwdlBtn);
-        cwrBtn = findViewById(R.id.cwrBtn);
-        acwrBtn = findViewById(R.id.acwrBtn);
         stopBtn = findViewById(R.id.stopBtn);
     }
 
     private void setButtonActions() {
-        final int defaultTime = 1000;  // msec
-
-        fwdBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = String.format(
-                        "F %d %d",
-                        ManualControlActivity.this.power,
-                        defaultTime);
-                tcpClient.sendMessage(message.getBytes());
-            }
-        });
-        bwdBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = String.format(
-                        "B %d %d",
-                        ManualControlActivity.this.power,
-                        defaultTime);
-                tcpClient.sendMessage(message.getBytes());
-            }
-        });
-        fwdrBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = String.format(
-                        "FR %d %d",
-                        ManualControlActivity.this.power,
-                        ManualControlActivity.this.degrees);
-                tcpClient.sendMessage(message.getBytes());
-            }
-        });
-        fwdlBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = String.format(
-                        "FL %d %d",
-                        ManualControlActivity.this.power,
-                        ManualControlActivity.this.degrees);
-                tcpClient.sendMessage(message.getBytes());
-            }
-        });
-        bwdrBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = String.format(
-                        "BR %d %d",
-                        ManualControlActivity.this.power,
-                        ManualControlActivity.this.degrees);
-                tcpClient.sendMessage(message.getBytes());
-            }
-        });
-        bwdlBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = String.format(
-                        "BL %d %d",
-                        ManualControlActivity.this.power,
-                        ManualControlActivity.this.degrees);
-                tcpClient.sendMessage(message.getBytes());
-            }
-        });
-        cwrBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = String.format(
-                        "RC %d %d",
-                        ManualControlActivity.this.power,
-                        ManualControlActivity.this.degrees);
-                tcpClient.sendMessage(message.getBytes());
-            }
-        });
-        acwrBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = String.format(
-                        "RA %d %d",
-                        ManualControlActivity.this.power,
-                        ManualControlActivity.this.degrees);
-                tcpClient.sendMessage(message.getBytes());
-            }
-        });
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tcpClient.sendMessage("STOP".getBytes());
+                if (tcpClient != null)
+                    tcpClient.sendMessage("STOP".getBytes());
+                else
+                    Log.i(TAG, "STOP");
             }
         });
     }
@@ -136,38 +45,33 @@ public class ManualControlActivity extends AppCompatActivity {
         findButtons();
         setButtonActions();
 
-
-        ((SeekBar) findViewById(R.id.powerSB)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        JoystickView joystick = findViewById(R.id.joystick);
+        joystick.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ((TextView) findViewById(R.id.powerValTV)).setText(progress + "%");
+            public void onMove(int angle, int strength) {
+                // do whatever you want
+                if (tcpClient != null)
+                    tcpClient.sendMessage(String.format("MOVE %d %d", angle, strength).getBytes());
+                else
+                    Log.i(TAG, String.format("MOVE %d %d", angle, strength));
             }
+        }, 200 /* ms */);
 
+        JoystickView joystick2 = findViewById(R.id.joystick2);
+        joystick2.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                ManualControlActivity.this.power = seekBar.getProgress();
+            public void onMove(int angle, int strength) {
+                // do whatever you want
+                if (tcpClient != null)
+                    tcpClient.sendMessage(String.format("ROTATE %d %d", angle, strength).getBytes());
+                else
+                    Log.i(TAG, String.format("ROTATE %d %d", angle, strength));
             }
-        });
-
-        ((SeekBar) findViewById(R.id.degreesSB)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ((TextView) findViewById(R.id.degreesValTV)).setText("" + progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                ManualControlActivity.this.degrees = seekBar.getProgress();
-            }
-        });
+        }, 200 /* ms */);
 
         tcpClient = MainActivity.tcpClient;
+        if (tcpClient == null)
+            return;
         tcpClient.setEventHandler(new TcpClient.EventHandler() {
             @Override
             public void onConnect() { }

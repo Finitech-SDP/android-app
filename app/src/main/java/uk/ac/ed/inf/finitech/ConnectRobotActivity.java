@@ -30,7 +30,15 @@ public class ConnectRobotActivity extends AppCompatActivity {
 
         connectButton = findViewById(R.id.connectButton);
 
+        Log.w("CONNECTROBOT", String.format("CONNECTROBOT %s", tcpClient));
+
         tcpClient = MainActivity.tcpClient;
+        if (tcpClient == null) {
+            Intent myIntent = new Intent(this, ManualControlActivity.class);
+            this.startActivity(myIntent);
+            return;
+        }
+
         tcpClient.setEventHandler(new TcpClient.EventHandler() {
             @Override
             public void onConnect() { }
