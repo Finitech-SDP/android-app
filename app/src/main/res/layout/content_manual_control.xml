@@ -10,7 +10,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -18,38 +20,148 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <io.github.controlwear.virtual.joystick.android.JoystickView
-            android:id="@+id/joystick"
-            android:layout_width="200dp"
+        <Switch
+            android:id="@+id/liftSwitch"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            app:JV_backgroundColor="#009688"
-            app:JV_borderColor="#00796B"
-            app:JV_borderWidth="4dp"
-            app:JV_buttonColor="#FF6E40"
-            app:JV_buttonSizeRatio="15%"
-            app:JV_fixedCenter="true" />
+            android:layout_weight="1"
+            android:text="Lift" />
 
-        <io.github.controlwear.virtual.joystick.android.JoystickView
-            android:id="@+id/joystick2"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            app:JV_backgroundColor="#009688"
-            app:JV_borderColor="#00796B"
-            app:JV_borderWidth="4dp"
-            app:JV_buttonColor="#FF6E40"
-            app:JV_buttonDirection="horizontal"
-            app:JV_buttonSizeRatio="15%"
-            app:JV_fixedCenter="true" />
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ToggleButton
+                    android:id="@+id/nwBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:textOff="↖"
+                    android:textOn="↖" />
+
+                <ToggleButton
+                    android:id="@+id/nBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:textOff="⬆️"
+                    android:textOn="⬆️" />
+
+                <ToggleButton
+                    android:id="@+id/neBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:textOff="↗"
+                    android:textOn="↗" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ToggleButton
+                    android:id="@+id/wBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:textOff=" ⬅️"
+                    android:textOn=" ⬅️" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ToggleButton
+                    android:id="@+id/eBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:textOff=" ➡️"
+                    android:textOn=" ➡️" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ToggleButton
+                    android:id="@+id/swBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:textOff="↙"
+                    android:textOn="↙" />
+
+                <ToggleButton
+                    android:id="@+id/sBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:textOff=" ⬇️"
+                    android:textOn=" ⬇️" />
+
+                <ToggleButton
+                    android:id="@+id/seBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:textOff="↘"
+                    android:textOn="↘" />
+            </TableRow>
+
+        </TableLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/acwBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="false"
+                android:textOff="↪"
+                android:textOn="↪" />
+
+            <ToggleButton
+                android:id="@+id/cwBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="false"
+                android:textOff="↩"
+                android:textOn="↩" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/stopBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="32dp"
             android:text="STOP" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

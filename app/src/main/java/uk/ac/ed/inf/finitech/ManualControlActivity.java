@@ -3,6 +3,7 @@ package uk.ac.ed.inf.finitech;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.button.MaterialButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,27 +11,85 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.ToggleButton;
 
-import io.github.controlwear.virtual.joystick.android.JoystickView;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ManualControlActivity extends AppCompatActivity {
     private static String TAG = "ManualControlActivity";
     private TcpClient tcpClient;
 
+    private Switch liftSwitch;
+    private ToggleButton nBtn, neBtn, eBtn, seBtn, sBtn, swBtn, wBtn, nwBtn, cwBtn, acwBtn;
     private Button stopBtn;
 
-    private void findButtons() {
+    private void findWidgets() {
+        liftSwitch = findViewById(R.id.liftSwitch);
+        nBtn = findViewById(R.id.nBtn);
+        neBtn = findViewById(R.id.neBtn);
+        eBtn = findViewById(R.id.eBtn);
+        seBtn = findViewById(R.id.seBtn);
+        sBtn = findViewById(R.id.sBtn);
+        swBtn = findViewById(R.id.swBtn);
+        wBtn = findViewById(R.id.wBtn);
+        nwBtn = findViewById(R.id.nwBtn);
+        cwBtn = findViewById(R.id.cwBtn);
+        acwBtn = findViewById(R.id.acwBtn);
         stopBtn = findViewById(R.id.stopBtn);
     }
 
-    private void setButtonActions() {
+    private void setEventHandlers() {
+        final Map<ToggleButton, String> commandMap = new HashMap<>();
+        commandMap.put(nBtn, "F");
+        commandMap.put(neBtn, "FR");
+        commandMap.put(eBtn, "R");
+        commandMap.put(seBtn, "BR");
+        commandMap.put(sBtn, "B");
+        commandMap.put(swBtn, "BL");
+        commandMap.put(wBtn, "L");
+        commandMap.put(nwBtn, "FL");
+        commandMap.put(cwBtn, "RC");
+        commandMap.put(acwBtn, "RA");
+
+        for (final ToggleButton button: commandMap.keySet()) {
+            button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (!isChecked) {
+                        sendMessage("STOP");
+                        liftSwitch.setEnabled(true);
+                        return;
+                    }
+
+                    // Uncheck all the other ToggleButtons
+                    for (ToggleButton b : commandMap.keySet()) {
+                        if (!button.equals(b)) {
+                            b.setChecked(false);
+                        }
+                    }
+
+                    // Disable lift Switch
+                    liftSwitch.setEnabled(false);
+
+                    ManualControlActivity.this.sendMessage(
+                            String.format("%s  -F", commandMap.get(button))
+                    );
+                }
+            });
+        }
+
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tcpClient != null)
-                    tcpClient.sendMessage("STOP".getBytes());
-                else
-                    Log.i(TAG, "STOP");
+                // Uncheck all ToggleButtons
+                for (ToggleButton b : commandMap.keySet()) {
+                    b.setChecked(false);
+                }
+
+                ManualControlActivity.this.sendMessage("STOP");
             }
         });
     }
@@ -42,32 +101,8 @@ public class ManualControlActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        findButtons();
-        setButtonActions();
-
-        JoystickView joystick = findViewById(R.id.joystick);
-        joystick.setOnMoveListener(new JoystickView.OnMoveListener() {
-            @Override
-            public void onMove(int angle, int strength) {
-                // do whatever you want
-                if (tcpClient != null)
-                    tcpClient.sendMessage(String.format("MOVE %d %d", angle, strength).getBytes());
-                else
-                    Log.i(TAG, String.format("MOVE %d %d", angle, strength));
-            }
-        }, 200 /* ms */);
-
-        JoystickView joystick2 = findViewById(R.id.joystick2);
-        joystick2.setOnMoveListener(new JoystickView.OnMoveListener() {
-            @Override
-            public void onMove(int angle, int strength) {
-                // do whatever you want
-                if (tcpClient != null)
-                    tcpClient.sendMessage(String.format("ROTATE %d %d", angle, strength).getBytes());
-                else
-                    Log.i(TAG, String.format("ROTATE %d %d", angle, strength));
-            }
-        }, 200 /* ms */);
+        findWidgets();
+        setEventHandlers();
 
         tcpClient = MainActivity.tcpClient;
         if (tcpClient == null)
@@ -99,6 +134,15 @@ public class ManualControlActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void sendMessage(String message) {
+        if (tcpClient == null) {
+            Log.w(TAG, String.format("mock message  %s", message));
+            return;
+        }
+
+        tcpClient.sendMessage(message.getBytes());
     }
 
     private void onTcpMessage(byte[] message) {
