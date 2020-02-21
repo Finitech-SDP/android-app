@@ -16,23 +16,27 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".AutoControl"
+            android:label="@string/title_activity_auto_control"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".ConnectRobotActivity"
             android:label="@string/title_activity_connect_robot"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ManualControlActivity"
             android:label="@string/title_activity_manual_control"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

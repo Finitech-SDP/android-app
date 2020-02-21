@@ -1,9 +1,9 @@
 package uk.ac.ed.inf.finitech;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.button.MaterialButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -24,7 +24,7 @@ public class ManualControlActivity extends AppCompatActivity {
 
     private Switch liftSwitch;
     private ToggleButton nBtn, neBtn, eBtn, seBtn, sBtn, swBtn, wBtn, nwBtn, cwBtn, acwBtn;
-    private Button stopBtn;
+    private Button stopBtn, autoBtn;
 
     private void findWidgets() {
         liftSwitch = findViewById(R.id.liftSwitch);
@@ -39,6 +39,7 @@ public class ManualControlActivity extends AppCompatActivity {
         cwBtn = findViewById(R.id.cwBtn);
         acwBtn = findViewById(R.id.acwBtn);
         stopBtn = findViewById(R.id.stopBtn);
+        autoBtn = findViewById(R.id.autoBtn);
     }
 
     private void setEventHandlers() {
@@ -90,6 +91,14 @@ public class ManualControlActivity extends AppCompatActivity {
                 }
 
                 ManualControlActivity.this.sendMessage("STOP");
+            }
+        });
+
+        autoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(ManualControlActivity.this, AutoControl.class);
+                ManualControlActivity.this.startActivity(myIntent);
             }
         });
     }

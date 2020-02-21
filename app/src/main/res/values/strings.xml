@@ -3,4 +3,5 @@
     <string name="title_activity_main">Connect to the Server</string>
     <string name="title_activity_manual_control">Manual Control</string>
     <string name="title_activity_connect_robot">Connect to the Robot</string>
+    <string name="title_activity_auto_control">AutoControl</string>
 </resources>
