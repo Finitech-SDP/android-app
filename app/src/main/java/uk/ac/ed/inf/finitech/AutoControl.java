@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class AutoControl extends AppCompatActivity {
     private String TAG = "Bora - " + AutoControl.class.getSimpleName();
     private TcpClient tcpClient;
@@ -54,11 +57,26 @@ public class AutoControl extends AppCompatActivity {
                 robotCol = Integer.parseInt(robotColEt.getText().toString());
                 robotRow = Integer.parseInt(robotRowEt.getText().toString());
 
-                String mode = deliverSw.isChecked() ? "DELIVER" : "PARK";
+                JSONObject message = new JSONObject();
+                try {
+                    JSONObject data = new JSONObject();
+                    JSONObject robotPosition = new JSONObject();
+                    JSONObject carPosition = new JSONObject();
 
-                AutoControl.this.sendMessage(String.format("AUTO ROBOT %d %d CAR %d %d %s",
-                        robotRow, robotCol, carRow, carCol, mode
-                ));
+                    message.put("TAG", "AUTO");
+                    message.put("DATA", data);
+                    data.put("mode", deliverSw.isChecked() ? "DELIVER" : "PARK");
+                    data.put("robotPosition", robotPosition);
+                    robotPosition.put("row", robotRow);
+                    robotPosition.put("column", robotCol);
+                    data.put("carPosition", carPosition);
+                    carPosition.put("row", carRow);
+                    carPosition.put("column", carCol);
+                } catch (JSONException exc) {
+                    Log.e(TAG, "JSON Exception", exc);
+                    AutoControl.this.finishAffinity();
+                }
+                AutoControl.this.sendMessage(message.toString());
             }
         });
 
