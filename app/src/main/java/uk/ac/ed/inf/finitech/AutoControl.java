@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 
 public class AutoControl extends AppCompatActivity {
-    private String TAG = "AutoControl";
+    private String TAG = "Bora - " + AutoControl.class.getSimpleName();
     private TcpClient tcpClient;
     private Button startBtn, stopBtn;
     private EditText carColEt, carRowEt, robotColEt, robotRowEt;

@@ -15,6 +15,9 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.ToggleButton;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -151,7 +154,18 @@ public class ManualControlActivity extends AppCompatActivity {
             return;
         }
 
-        tcpClient.sendMessage(message.getBytes());
+        JSONObject msg = new JSONObject();
+        JSONObject data = new JSONObject();
+        try {
+            msg.put("TAG", "RELAY-ASCII");
+            msg.put("DATA", data);
+            data.put("message", message);
+        } catch (JSONException exc) {
+            Log.e(TAG, "JSON error", exc);
+            this.finishAffinity();
+        }
+
+        tcpClient.sendMessage(msg.toString().getBytes());
     }
 
     private void onTcpMessage(byte[] message) {

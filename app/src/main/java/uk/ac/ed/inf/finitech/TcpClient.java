@@ -16,7 +16,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 class TcpClient implements Runnable {
-    private static final String TAG = TcpClient.class.getSimpleName();
+    private static final String TAG = "Bora - " + TcpClient.class.getSimpleName();
     private TcpClientState state;
     private final String serverIp;
     private final int serverPort;
